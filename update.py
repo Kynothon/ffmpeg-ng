@@ -1,0 +1,159 @@
+#! /usr/bin/env python
+
+from string import Template
+import sys
+import getopt
+import argparse
+import configparser
+from os import listdir, path
+
+templates = "./templates"
+
+fragments = path.join(templates, "fragments")
+variants = path.join(templates, "variants")
+common = path.join(templates, "common")
+configfile_template = path.join(templates, 'config', "config_${version}.ini")
+
+class ActionEnableDisable(argparse.Action):
+    def __init__(self, option_strings, dest, default=None, required=False, help=None):
+        if len(option_strings) != 1:
+            raise ValueError('Only a single argument is allowed with enable/disable action')
+        if not option_strings[0].startswith('--'):
+            raise ValueError('Enable/Disable arguments must be prefixed with "--"')
+
+        opt_name = option_strings[0][2:]
+        opts = ['--enable-' + opt_name, '--disable-' + opt_name]
+        super(ActionEnableDisable, self).__init__(opts, dest, nargs=0, const=None, default=default, required=required, help=help)
+
+    def __call__(self, parser, namespace, values, option_strings=None):
+        if option_strings.startswith('--disable-'):
+            setattr(namespace, self.dest, False)
+        else:
+            setattr(namespace, self.dest, True)
+
+def parser_gen():
+    parser = argparse.ArgumentParser(description='Dockerfile generator.')
+    for f in listdir(fragments):
+        if f != 'ffmpeg' and path.isfile(path.join(fragments, f)):
+            parser.add_argument('--' + f, action=ActionEnableDisable, default=None, help='enable/disable ' + f)
+
+    parser.add_argument('--enable-all', help='set all external libraries to true', action='store_true', default=False)
+    parser.add_argument('version', default='4.1.3')
+    parser.add_argument('--with-bins', action='store_true', default=False )
+    parser.add_argument('--no-strip', action='store_true', default=False)
+
+    outsize = parser.add_mutually_exclusive_group(required=False)
+    outsize.add_argument('--fat', help='keep everything', action='store_true', default=True)
+    outsize.add_argument('--slim', help='only keep libraries', action='store_true', default=False)
+    outsize.add_argument('--scratch', help='build from scratch', action='store_true', default=False)
+
+    return parser
+
+def kebab_arg(name):
+    return name.replace('_', '-')
+
+def snake_arg(name):
+    return name.replace('-', '_')
+
+def dockerfile_gen(args, config):
+    variant = open(path.join(templates, 'variants', 'Dockerfile.alpine'))
+    src = Template(variant.read())
+
+    d={
+        'version': '3.8',
+        'prefix': '/tmp/build',
+        'makeflags': '-j6'
+      }
+
+    result = src.substitute(d)
+    print(result)
+
+    deps = []
+    flags = []
+    default = False
+    if getattr(args, 'enable_all'):
+        delattr(args, 'enable_all')
+        default = True
+        
+    for section in config.sections():
+        dep = snake_arg(section)
+        if hasattr(args, dep) and getattr(args, dep) is None:
+            setattr(args, dep, default)
+
+    for arg in vars(args):
+        library = kebab_arg(arg)
+        if getattr(args, arg) and library in config:
+            if 'DependsOn' in config[library]:
+                if not config[library]['DependsOn'] in deps:
+                    for dependency in config[library]['DependsOn'].split(','):
+                        deps.append(dependency.strip())
+            if 'Flags' in config[library]:
+                if not config[library]['Flags'] in flags:
+                    for flag in config[library]['Flags'].split(','):
+                        flags.append(flag.strip())
+            if not library in deps:
+                deps.append(library)
+
+    print ("")
+    print ("ARG\tFFMPEG_VERSION=%s" % (config.get('ffmpeg', 'Version')))
+    for dependency in deps:
+            print ("ARG\t%s_VERSION=%s" % (snake_arg(dependency.upper()), config.get(dependency, "Version")))
+
+    print ("")
+    for dependency in deps:
+        if "SHA256sum" in config[dependency]:
+            print ("ARG\t%s_SHA256SUM=%s" % (dependency.upper(), config.get(dependency, "SHA256sum")))
+
+    print("")
+    for dependency in deps:
+            with open(path.join(fragments, dependency)) as fragment:
+                print (fragment.read())
+
+    with open(path.join(fragments, 'ffmpeg')) as ffmpeg_fragment:
+        ffmpeg_template = Template(ffmpeg_fragment.read())
+        ffmpeg_flags = ' \\\n\t'.join(flags)
+
+        result = ffmpeg_template.safe_substitute({'lib_flags': ffmpeg_flags})
+        print(result)
+
+    if getattr(args, 'slim'):
+        assembly_type = 'slim'
+        release_pattern = {'source': 'base', 'entrypoint': 'ffmpeg', 'install_dir': '/usr/local'}
+        assembly_pattern = {
+            'bins': 'true' if getattr(args, 'with_bins') else 'false',
+            'strip': 'false' if getattr(args, 'no_strip') else 'true'
+            }
+    elif getattr(args, 'scratch'):
+        assembly_type = 'scratch'
+        release_pattern = {'source': 'scratch', 'entrypoint': '/bin/ffmpeg', 'install_dir': '/'}
+        assembly_pattern = {
+            'bins': 'true' if getattr(args, 'with_bins') else 'false',
+            'strip': 'false' if getattr(args, 'no_strip') else 'true'
+            }
+    else :
+        assembly_type = 'fat'
+        release_pattern = {'source': 'base', 'entrypoint': 'ffmpeg', 'install_dir': '/usr/local'}
+        assembly_pattern = {}
+
+    with open(path.join(common, assembly_type)) as assembly:
+        assembly_template = Template(assembly.read())            
+        print (assembly_template.safe_substitute(assembly_pattern))
+
+    with open(path.join(common, 'release')) as release:
+        release_template = Template(release.read())
+        print (release_template.safe_substitute(release_pattern))
+
+
+
+def main(argv):
+    args_parser = parser_gen()
+    config_parser = configparser.ConfigParser()
+
+    args = args_parser.parse_args()
+    configfile = Template(configfile_template)
+
+    config_parser.read(configfile.safe_substitute({'version': getattr(args, 'version')}))
+    dockerfile_gen(args, config_parser)
+
+if __name__ == '__main__':
+    main(sys.argv)

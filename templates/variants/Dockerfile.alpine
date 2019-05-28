@@ -1,0 +1,43 @@
+FROM alpine:$version as base
+
+RUN apk add --no-cache --update \
+                                libgcc \
+                                libstdc++ \
+                                ca-certificates \
+                                libcrypto1.0 \
+                                libssl1.0 \
+                                libgomp \
+                                expat \
+                                libuuid
+
+FROM base as build
+
+ARG PREFIX=$prefix 
+ARG MAKEFLAGS=$makeflags
+ARG PKG_CONFIG_PATH=$prefix/lib/pkgconfig
+
+RUN apk add --no-cache --update \
+                                autoconf \
+                                automake \
+                                bash \
+                                binutils \
+                                bzip2 \
+                                cmake \
+                                curl \
+                                coreutils \
+                                diffutils \
+                                file \
+                                g++ \
+                                git \
+                                gcc \
+                                gperf \
+                                libtool \
+                                make \
+                                python \
+                                openssl-dev \
+                                tar \
+                                yasm \
+                                nasm \
+                                zlib-dev \
+                                expat-dev \
+                                util-linux-dev
