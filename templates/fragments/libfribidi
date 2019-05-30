@@ -12,4 +12,4 @@ RUN  \
     ./configure -prefix="${PREFIX}" --disable-static --enable-shared && \
     make -j 1 && \
     make install && \
-    rm -rf ${DIR}}
+    rm -rf ${DIR}
