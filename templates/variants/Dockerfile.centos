@@ -30,7 +30,20 @@ RUN yum --enablerepo=extras install -y epel-release && \
                 zlib-devel \
                 libuuid-devel \
                 libcurl-devel \
-                libxz-devel
+                xz-devel \
+                libarchive-devel
+
+#Centos is missing recent version of CMake (>= 3.5)
+RUN \
+    DIR=/tmp/cmake && \
+    mkdir -p ${DIR} && \
+    cd ${DIR} && \
+    curl -sL https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz | \
+    tar -zx --strip-components=1 && \
+    ./bootstrap --system-libs --no-system-jsoncpp && \
+    make && \
+    make install && \
+    rm -rf ${DIR}
 
 #Centos is missing recent version of nasm (>= 2.13)
 RUN \
@@ -44,14 +57,3 @@ RUN \
     make install && \
     rm -rf ${DIR}
 
-#Centos is missing recent version of CMake (>= 3.5)
-RUN \
-    DIR=/tmp/cmake && \
-    mkdir -p ${DIR} && \
-    cd ${DIR} && \
-    curl -sL https://cmake.org/files/v3.5/cmake-3.5.2.tar.gz | \
-    tar -zx --strip-components=1 && \
-    ./bootstrap --system-libs --no-system-jsoncpp && \
-    make && \
-    make install && \
-    rm -rf ${DIR}
