@@ -7,10 +7,14 @@ import argparse
 import configparser
 from os import listdir, path
 
+variants = ['alpine', 'centos']
+versions = ['4.1', '4.0', '3.4', '3.3', '3.2', '2.8']
+builddir = '/tmp/build'
+makeflags = '-j6'
+
 templates = "./templates"
 
 fragments = path.join(templates, "fragments")
-variants = path.join(templates, "variants")
 common = path.join(templates, "common")
 configfile_template = path.join(templates, 'config', "config_${version}.ini")
 
@@ -38,7 +42,8 @@ def parser_gen():
             parser.add_argument('--' + f, action=ActionEnableDisable, default=None, help='enable/disable ' + f)
 
     parser.add_argument('--enable-all', help='set all external libraries to true', action='store_true', default=False)
-    parser.add_argument('version', default='4.1.3')
+    parser.add_argument('variant', default='alpine', choices=variants)
+    parser.add_argument('version', default='4.1', choices=versions)
     parser.add_argument('--with-bins', action='store_true', default=False )
     parser.add_argument('--no-strip', action='store_true', default=False)
 
@@ -56,16 +61,15 @@ def snake_arg(name):
     return name.replace('-', '_')
 
 def dockerfile_gen(args, config):
-    variant = open(path.join(templates, 'variants', 'Dockerfile.alpine'))
+    variant = open(path.join(templates, 'variants', "Dockerfile.%s" % (getattr(args, 'variant'))))
     src = Template(variant.read())
 
     d={
-        'version': '3.8',
-        'prefix': '/tmp/build',
-        'makeflags': '-j6'
+        'prefix': builddir,
+        'makeflags': makeflags
       }
 
-    result = src.substitute(d)
+    result = src.safe_substitute(d)
     print(result)
 
     deps = []

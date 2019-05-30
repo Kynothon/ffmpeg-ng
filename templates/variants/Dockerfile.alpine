@@ -1,4 +1,4 @@
-FROM alpine:$version as base
+FROM alpine:3.8 as base
 
 RUN apk add --no-cache --update \
                                 libgcc \
