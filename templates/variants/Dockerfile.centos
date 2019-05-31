@@ -1,6 +1,7 @@
 FROM centos:7 as base
 
-RUN yum -y install libgomp libuuid
+RUN yum -y install libgomp libuuid && \
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
 
 FROM base as build
 

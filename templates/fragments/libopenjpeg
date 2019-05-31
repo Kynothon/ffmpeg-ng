@@ -3,7 +3,7 @@ RUN \
         DIR=/tmp/openjpeg && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
-        if [[ `echo ${LIBOPENJPEG_VERSION} | tr -d '.'` -ge '210' ]]; then \
+        if test `echo ${LIBOPENJPEG_VERSION} | tr -d '.'` -ge '210'; then \
                 version_prefix='v'; \
         else \
                 version_prefix='version.' ;\

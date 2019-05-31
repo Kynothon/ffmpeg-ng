@@ -7,7 +7,7 @@ import argparse
 import configparser
 from os import listdir, path
 
-variants = ['alpine', 'centos']
+variants = ['alpine', 'centos', 'ubuntu']
 versions = ['4.1', '4.0', '3.4', '3.3', '3.2', '2.8']
 builddir = '/tmp/build'
 makeflags = '-j6'
@@ -60,17 +60,18 @@ def kebab_arg(name):
 def snake_arg(name):
     return name.replace('-', '_')
 
-def dockerfile_gen(args, config):
+def dockerfile_gen(args, config, packages):
     variant = open(path.join(templates, 'variants', "Dockerfile.%s" % (getattr(args, 'variant'))))
     src = Template(variant.read())
 
     d={
         'prefix': builddir,
-        'makeflags': makeflags
+        'makeflags': makeflags,
+        'packages': '',
+        'dev_packages': ''
       }
 
-    result = src.safe_substitute(d)
-    print(result)
+   
 
     deps = []
     flags = []
@@ -98,10 +99,21 @@ def dockerfile_gen(args, config):
             if not library in deps:
                 deps.append(library)
 
+    for dep in deps:
+        if 'Install' in config[dep]:
+            for package in config[dep]['Install'].split(','):
+                d['packages'] = "%s %s" % (packages[getattr(args, 'variant')][package].strip(), d['packages'])
+            for package in config[dep]['InstallDev'].split(','):
+                d['dev_packages'] = "%s %s" % (packages[getattr(args, 'variant')][package].strip(), d['dev_packages'])
+
+    result = src.safe_substitute(d)
+    print(result)
+
     print ("")
     print ("ARG\tFFMPEG_VERSION=%s" % (config.get('ffmpeg', 'Version')))
     for dependency in deps:
-            print ("ARG\t%s_VERSION=%s" % (snake_arg(dependency.upper()), config.get(dependency, "Version")))
+            if "Version" in config[dependency]:
+                print ("ARG\t%s_VERSION=%s" % (snake_arg(dependency.upper()), config.get(dependency, "Version")))
 
     print ("")
     for dependency in deps:
@@ -152,12 +164,14 @@ def dockerfile_gen(args, config):
 def main(argv):
     args_parser = parser_gen()
     config_parser = configparser.ConfigParser()
+    package_parser = configparser.ConfigParser()
 
     args = args_parser.parse_args()
     configfile = Template(configfile_template)
 
     config_parser.read(configfile.safe_substitute({'version': getattr(args, 'version')}))
-    dockerfile_gen(args, config_parser)
+    package_parser.read(path.join(templates, 'variants', 'packages.ini'))
+    dockerfile_gen(args, config_parser, package_parser)
 
 if __name__ == '__main__':
     main(sys.argv)
