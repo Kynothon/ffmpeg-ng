@@ -7,8 +7,8 @@ import argparse
 import configparser
 from os import listdir, path
 
-variants = ['alpine', 'centos', 'ubuntu']
-versions = ['4.1', '4.0', '3.4', '3.3', '3.2', '2.8']
+variants = ['alpine', 'centos', 'ubuntu', 'nvidia']
+versions = ['snapshot', '4.1', '4.0', '3.4', '3.3', '3.2', '2.8']
 builddir = '/tmp/build'
 makeflags = '-j6'
 
@@ -88,6 +88,8 @@ def dockerfile_gen(args, config, packages):
     for arg in vars(args):
         library = kebab_arg(arg)
         if getattr(args, arg) and library in config:
+            if 'Variants' in config[library] and config[library]['Variant'].find(variant) == -1:
+                continue
             if 'DependsOn' in config[library]:
                 if not config[library]['DependsOn'] in deps:
                     for dependency in config[library]['DependsOn'].split(','):
@@ -99,10 +101,11 @@ def dockerfile_gen(args, config, packages):
             if not library in deps:
                 deps.append(library)
 
-    for dep in deps:
+    for dep in deps + ['ffmpeg']:
         if 'Install' in config[dep]:
             for package in config[dep]['Install'].split(','):
                 d['packages'] = "%s %s" % (packages[getattr(args, 'variant')][package].strip(), d['packages'])
+        if 'Install-dev' in config[dep]:
             for package in config[dep]['InstallDev'].split(','):
                 d['dev_packages'] = "%s %s" % (packages[getattr(args, 'variant')][package].strip(), d['dev_packages'])
 

@@ -1,11 +1,11 @@
-FROM alpine:3.8 as base
+FROM alpine:3.9 as base
 
-RUN apk add --no-cache --update \
+RUN apk add --no-cache --update $packages \
                                 libgcc \
                                 libstdc++ \
                                 ca-certificates \
-                                libcrypto1.0 \
-                                libssl1.0 \
+                                libcrypto1.1 \
+                                libssl1.1 \
                                 libgomp \
                                 expat \
                                 libuuid
@@ -16,7 +16,7 @@ ARG PREFIX=$prefix
 ARG MAKEFLAGS=$makeflags
 ARG PKG_CONFIG_PATH=$prefix/lib/pkgconfig
 
-RUN apk add --no-cache --update \
+RUN apk add --no-cache --update $dev_packages \
                                 autoconf \
                                 automake \
                                 bash \
