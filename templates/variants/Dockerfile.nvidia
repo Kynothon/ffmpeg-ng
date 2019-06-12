@@ -1,17 +1,20 @@
 FROM        nvidia/cuda:10.1-runtime-ubuntu18.04 AS base
 
-WORKDIR     /tmp/workdir
+ENV     NVIDIA_DRIVER_CAPABILITIES=video
 
 RUN     apt-get -yqq update && \
         apt-get install -yq --no-install-recommends $packages ca-certificates expat libgomp1 libuuid1 libssl1.0 && \
         apt-get autoremove -y && \
-        apt-get clean -y
+        apt-get clean -y 
 
 FROM base as build
+
+WORKDIR     /tmp/workdir
 
 ARG PREFIX=$prefix 
 ARG MAKEFLAGS=$makeflags
 ARG PKG_CONFIG_PATH=$prefix/lib/pkgconfig
+ARG C_INCLUDE_PATH=$prefix/include/ffnvcodec
 
 RUN apt-get -yqq update && \
     apt-get install -yq --no-install-recommends \

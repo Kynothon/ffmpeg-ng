@@ -1,6 +1,6 @@
 ## x264 http://www.videolan.org/developers/x264.html
 RUN \
-    DIR=/tmp/x264 && \
+    DIR=x264 && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sL https://download.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-${LIBX264_VERSION}.tar.bz2 | \

@@ -1,6 +1,6 @@
 ### libtheora http://www.theora.org/
 RUN \
-        DIR=/tmp/theora && \
+        DIR=theora && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
         curl -sLO http://downloads.xiph.org/releases/theora/libtheora-${LIBTHEORA_VERSION}.tar.gz && \

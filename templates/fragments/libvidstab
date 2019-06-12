@@ -1,6 +1,6 @@
 ## libvstab https://github.com/georgmartius/vid.stab
 RUN  \
-    DIR=/tmp/vid.stab && \
+    DIR=vid.stab && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://github.com/georgmartius/vid.stab/archive/v${LIBVIDSTAB_VERSION}.tar.gz &&\

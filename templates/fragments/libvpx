@@ -1,6 +1,6 @@
 ### libvpx https://www.webmproject.org/code/
 RUN \
-    DIR=/tmp/vpx && \
+    DIR=vpx && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sL https://codeload.github.com/webmproject/libvpx/tar.gz/v${LIBVPX_VERSION} | \

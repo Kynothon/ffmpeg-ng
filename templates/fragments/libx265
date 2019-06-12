@@ -1,6 +1,6 @@
 ### x265 http://x265.org/
 RUN \
-    DIR=/tmp/x265 && \
+    DIR=x265 && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sL https://download.videolan.org/pub/videolan/x265/x265_${LIBX265_VERSION}.tar.gz  | \

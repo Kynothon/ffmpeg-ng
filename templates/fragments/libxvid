@@ -1,6 +1,6 @@
 ### xvid https://www.xvid.com/
 RUN \
-        DIR=/tmp/xvid && \
+        DIR=xvid && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
         curl -sLO http://downloads.xvid.org/downloads/xvidcore-${LIBXVID_VERSION}.tar.gz && \

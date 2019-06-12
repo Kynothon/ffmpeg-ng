@@ -5,6 +5,8 @@ RUN yum -y install $packages libgomp libuuid && \
 
 FROM base as build
 
+WORKDIR     /tmp/workdir
+
 ARG PREFIX=$prefix 
 ARG MAKEFLAGS=$makeflags
 ARG PKG_CONFIG_PATH=$prefix/lib/pkgconfig

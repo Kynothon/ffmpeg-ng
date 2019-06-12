@@ -1,5 +1,5 @@
 RUN  \
-    DIR=/tmp/libass && \
+    DIR=libass && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://github.com/libass/libass/archive/${LIBASS_VERSION}.tar.gz &&\

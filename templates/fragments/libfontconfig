@@ -1,6 +1,6 @@
 ## fontconfig https://www.freedesktop.org/wiki/Software/fontconfig/
 RUN  \
-    DIR=/tmp/fontconfig && \
+    DIR=fontconfig && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://www.freedesktop.org/software/fontconfig/release/fontconfig-${LIBFONTCONFIG_VERSION}.tar.bz2 &&\

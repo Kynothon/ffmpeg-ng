@@ -1,5 +1,5 @@
 RUN \
-	DIR=/tmp/aom && \
+	DIR=aom && \
     git clone --branch v${LIBAOM_VERSION} --depth 1 https://aomedia.googlesource.com/aom ${DIR} ; \
     cd ${DIR} ; \
     rm -rf CMakeCache.txt CMakeFiles ; \

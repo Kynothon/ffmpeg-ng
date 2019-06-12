@@ -1,7 +1,7 @@
 ## fridibi https://www.fribidi.org/
 # + https://github.com/fribidi/fribidi/issues/8
 RUN  \
-    DIR=/tmp/fribidi && \
+    DIR=fribidi && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://github.com/fribidi/fribidi/archive/${LIBFRIBIDI_VERSION}.tar.gz && \

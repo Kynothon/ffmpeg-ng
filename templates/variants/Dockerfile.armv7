@@ -1,4 +1,4 @@
-FROM alpine:3.9 as base
+FROM arm32v7/alpine:3.9 as base
 
 RUN apk add --no-cache --update $packages \
                                 libgcc \

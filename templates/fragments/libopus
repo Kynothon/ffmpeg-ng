@@ -1,5 +1,5 @@
 RUN \
-    DIR=/tmp/opus && \
+    DIR=opus && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://archive.mozilla.org/pub/opus/opus-${LIBOPUS_VERSION}.tar.gz && \

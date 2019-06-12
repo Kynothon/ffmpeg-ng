@@ -1,6 +1,6 @@
 ## openjpeg https://github.com/uclouvain/openjpeg
 RUN \
-        DIR=/tmp/openjpeg && \
+        DIR=openjpeg && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
         if test `echo ${LIBOPENJPEG_VERSION} | tr -d '.'` -ge '210'; then \

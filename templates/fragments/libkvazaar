@@ -1,6 +1,6 @@
 ## kvazaar https://github.com/ultravideo/kvazaar
 RUN \
-    DIR=/tmp/kvazaar && \
+    DIR=kvazaar && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://github.com/ultravideo/kvazaar/archive/v${LIBKVAZAAR_VERSION}.tar.gz &&\

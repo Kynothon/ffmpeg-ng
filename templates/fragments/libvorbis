@@ -1,6 +1,6 @@
 ### libvorbis https://xiph.org/vorbis/
 RUN \
-    DIR=/tmp/vorbis && \
+    DIR=vorbis && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO http://downloads.xiph.org/releases/vorbis/libvorbis-${LIBVORBIS_VERSION}.tar.gz && \

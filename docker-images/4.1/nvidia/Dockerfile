@@ -40,8 +40,8 @@ RUN apt-get -yqq update && \
         zlib1g-dev \
         uuid-dev 
 
-ARG	FFMPEG_VERSION=2.8.15
-ARG	NVENC_VERSION=8.2.15.8
+ARG	FFMPEG_VERSION=4.1.3
+ARG	NVENC_VERSION=9.0.18.1
 
 
 RUN \ 
@@ -67,8 +67,9 @@ RUN \
         --enable-small \
         --extra-cflags="-I${PREFIX}/include -I/usr/local/include" \
         --extra-ldflags="-L${PREFIX}/lib -L/usr/local/lib" \
-        --enable-nvenc \
-	--enable-nonfree \
+        --enable-cuda \
+	--enable-nvenc \
+	--enable-cuvid \
         --prefix="${PREFIX}" && \
         make && \
         make install && \

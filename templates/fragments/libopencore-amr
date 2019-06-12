@@ -1,6 +1,6 @@
 ## opencore-amr https://sourceforge.net/projects/opencore-amr/
 RUN \
-    DIR=/tmp/opencore-amr && \
+    DIR=opencore-amr && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \ 
     curl -sL https://kent.dl.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-${LIBOPENCORE_AMR_VERSION}.tar.gz | \

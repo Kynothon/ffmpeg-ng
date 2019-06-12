@@ -1,6 +1,6 @@
 ## libogg https://www.xiph.org/ogg/
 RUN \
-    DIR=/tmp/ogg && \
+    DIR=ogg && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO http://downloads.xiph.org/releases/ogg/libogg-${LIBOGG_VERSION}.tar.gz && \

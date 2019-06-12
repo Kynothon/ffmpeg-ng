@@ -1,6 +1,6 @@
 ## freetype https://www.freetype.org/
 RUN  \
-    DIR=/tmp/freetype && \
+    DIR=freetype && \
     mkdir -p ${DIR} && \
     cd ${DIR} && \
     curl -sLO https://download.savannah.gnu.org/releases/freetype/freetype-${LIBFREETYPE_VERSION}.tar.gz && \

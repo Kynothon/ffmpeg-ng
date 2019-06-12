@@ -1,6 +1,6 @@
 ### fdk-aac https://github.com/mstorsjo/fdk-aac
 RUN \
-        DIR=/tmp/fdk-aac && \
+        DIR=fdk-aac && \
         mkdir -p ${DIR} && \
         cd ${DIR} && \
         curl -sL https://github.com/mstorsjo/fdk-aac/archive/v${LIBFDK_AAC_VERSION}.tar.gz | \
