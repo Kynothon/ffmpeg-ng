@@ -42,4 +42,6 @@ RUN apk add --no-cache --update $dev_packages \
                                 nasm \
                                 zlib-dev \
                                 expat-dev \
-                                util-linux-dev
+                                util-linux-dev \
+                                meson \
+                                ninja

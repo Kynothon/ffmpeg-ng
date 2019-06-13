@@ -35,4 +35,6 @@ RUN apt-get -yqq update && \
         libssl1.0-dev \
         yasm \
         zlib1g-dev \
-        uuid-dev 
+        uuid-dev \
+        ninja-build \
+        meson

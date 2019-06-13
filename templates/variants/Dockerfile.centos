@@ -1,7 +1,8 @@
 FROM centos:7 as base
 
 RUN yum -y install $packages libgomp libuuid && \
-    echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf && \
+    echo "/usr/local/lib64" >> /etc/ld.so.conf.d/local.conf
 
 FROM base as build
 
@@ -9,7 +10,7 @@ WORKDIR     /tmp/workdir
 
 ARG PREFIX=$prefix 
 ARG MAKEFLAGS=$makeflags
-ARG PKG_CONFIG_PATH=$prefix/lib/pkgconfig
+ARG PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$prefix/lib64/pkgconfig
 
 RUN yum --enablerepo=extras install -y epel-release && \
     yum install -y \
@@ -35,7 +36,9 @@ RUN yum --enablerepo=extras install -y epel-release && \
                 libuuid-devel \
                 libcurl-devel \
                 xz-devel \
-                libarchive-devel
+                libarchive-devel \
+                python36 \
+                python36-pip
 
 #Centos is missing recent version of CMake (>= 3.5)
 RUN \
@@ -61,3 +64,20 @@ RUN \
     make install && \
     rm -rf ${DIR}
 
+#Centos is missing ninja
+RUN \
+    DIR=/tmp/ninja && \
+    mkdir -p ${DIR} && \
+    cd ${DIR} && \
+    curl -sL https://github.com/ninja-build/ninja/archive/v1.9.0.tar.gz | \
+    tar -zx --strip-components=1 && \
+    python configure.py --bootstrap && \
+    cp ./ninja /usr/bin/ && \
+    rm -rf ${DIR}
+
+RUN \
+    DIR=/tmp/meson && \
+    mkdir -p ${DIR} && \
+    cd ${DIR} && \
+    pip3 install meson && \
+    rm -rf ${DIR}
