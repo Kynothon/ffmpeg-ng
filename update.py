@@ -105,7 +105,7 @@ def dockerfile_gen(args, config, packages):
         if 'Install' in config[dep]:
             for package in config[dep]['Install'].split(','):
                 d['packages'] = "%s %s" % (packages[getattr(args, 'variant')][package].strip(), d['packages'])
-        if 'Install-dev' in config[dep]:
+        if 'InstallDev' in config[dep]:
             for package in config[dep]['InstallDev'].split(','):
                 d['dev_packages'] = "%s %s" % (packages[getattr(args, 'variant')][package].strip(), d['dev_packages'])
 
